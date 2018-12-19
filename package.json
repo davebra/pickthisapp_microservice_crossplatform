@@ -1,0 +1,23 @@
+{
+  "name": "pickthisapp_microservice_crossplatform",
+  "version": "0.1.0",
+  "description": "RestAPI for PickThisApp Project for CrossPlatform subject AIT Melbourne",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Davide Bragagnolo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.0",
+    "nodemon": "^1.18.9",
+    "uuid": "^3.3.2"
+  }
+}
