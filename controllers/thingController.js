@@ -63,7 +63,7 @@ exports.index = function (req, res) {
 };
 
 // Handle create thing actions
-exports.new = function (req, res) {
+exports.create = function (req, res) {
     res.json({
         status: "warning",
         message: 'Not yet implemented'
