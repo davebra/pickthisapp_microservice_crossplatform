@@ -24,10 +24,11 @@ var userSchema = mongoose.Schema({
         required: true
     },
     timestamp: {
-        type: String,
-        required: true
+        type: Date,
+        required: true,
+        default: Date.now
     },
-    things: Array
+    things: [String]
 });
 
 // Export User model

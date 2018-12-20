@@ -18,13 +18,9 @@ exports.index = function (req, res) {
         return;
     }
 
-    const ts = new Date().getTime();
-
-
     var newUser = new User();
     newUser._id = uuidv5(req.body.providerid, '300005f7-1174-47bf-bf0a-9a4a99887c88');
     newUser.status = 'enabled'; //enabled, suspended, disabled
-    newUser.timestamp = ts;
     newUser.provider = req.body.provider;
     newUser.providerid = req.body.providerid;
     newUser.email = req.body.email;

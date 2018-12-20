@@ -13,8 +13,7 @@ app.use(bodyParser.json());
 
 // Connect to Mongoose and set connection variable
 mongoose.connect(
-    process.env.MONGODB_PROD ||
-    process.env.MONGODB_DEV ||
+    process.env.MONGODB ||
     'mongodb://127.0.0.1:27017/pickthisapp', {useNewUrlParser: true});
 
 var db = mongoose.connection;

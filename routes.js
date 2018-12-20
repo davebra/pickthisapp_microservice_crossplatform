@@ -11,7 +11,7 @@ router.get('/', function (req, res) {
 // Import controllers
 var tagController = require('./controllers/tagController');
 var userController = require('./controllers/userController');
-//var thingsController = require('./controllers/thingsController');
+var thingController = require('./controllers/thingController');
 
 // Tags routes
 router.route('/tags')
@@ -24,12 +24,12 @@ router.route('/user')
     .post(userController.index);
 
 // Things routes
-// router.route('/things')
-//     .get(thingsController.index)
-//     .post(thingsController.create);
-// router.route('/things/:thing_id')
-//     .get(thingsController.view)
-//     .post(thingsController.update);
+router.route('/things')
+    .get(thingController.index)
+    .post(thingController.create);
+router.route('/things/:thing_id')
+    .get(thingController.view)
+    .post(thingController.update);
 
 // Export API routes
 module.exports = router;
