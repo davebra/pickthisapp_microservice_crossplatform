@@ -14,7 +14,6 @@ exports.index = function (req, res) {
             }
             res.json({
                 status: "success",
-                message: "Tags retrieved successfully",
                 data: tags
             });
         });
@@ -30,7 +29,6 @@ exports.index = function (req, res) {
             }
             res.json({
                 status: "success",
-                message: "Tags retrieved successfully",
                 data: tags
             });
         }, req.query.tag.toLowerCase());
@@ -85,7 +83,7 @@ exports.create = function (req, res) {
             });
         }
         res.json({
-            message: 'New tag created!',
+            status: 'success',
             data: tag
         });
     });

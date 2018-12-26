@@ -14,7 +14,8 @@ app.use(bodyParser.json());
 // Connect to Mongoose and set connection variable
 mongoose.connect(
     process.env.MONGODB_URI ||
-    'mongodb://127.0.0.1:27017/pickthisapp', {useNewUrlParser: true});
+    //'mongodb://127.0.0.1:27017/pickthisapp', {useNewUrlParser: true});
+    'mongodb://192.168.1.2:27017/pickthisapp', {useNewUrlParser: true});
 
 var db = mongoose.connection;
 

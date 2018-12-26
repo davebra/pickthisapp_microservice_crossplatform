@@ -2,6 +2,10 @@ let mongoose = require('mongoose');
 
 // Setup schema
 var thingSchema = mongoose.Schema({
+    _id: {
+        type: String,
+        required: true
+    },
     location: {
         type: { type: String },
         coordinates: []
@@ -35,9 +39,12 @@ var thingSchema = mongoose.Schema({
             type: Date,
             default: Date.now
         }, 
-        what: Date
+        what: String
     }]
 });
 
+//hingSchema.index({ location: "2dsphere" });
+
 // Export Thing model
-var Thing = module.exports = mongoose.model('things', thingSchema);
+var Thing = mongoose.model("things", thingSchema);
+module.exports = Thing;

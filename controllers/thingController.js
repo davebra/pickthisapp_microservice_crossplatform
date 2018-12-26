@@ -1,12 +1,13 @@
 Thing = require('../models/thingModel');
 let uuidv5 = require('uuid/v5');
+let uuidv1 = require('uuid/v1');
 
 // Handle index actions
 exports.index = function (req, res) {
 
-    if (typeof req.body.lat !== 'string' || 
-        typeof req.body.lng !== 'string' || 
-        typeof req.body.radius !== 'string' ) {
+    if (typeof req.query.lat !== 'string' || 
+        typeof req.query.lng !== 'string' || 
+        typeof req.query.radius !== 'string' ) {
         res.json({
             status: "error",
             message: "Missing position",
@@ -14,35 +15,21 @@ exports.index = function (req, res) {
         return;
     }
 
-    if ( parseInt(req.body.radius) > 60000 ) {
+    if ( parseInt(req.query.radius) > 60000 ) {
         res.json({
             status: "warning",
             message: "Please zoom in",
         });
         return;
     }
-    
-    Thing.get(function (err, things) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "Things retrieved successfully",
-            data: things
-        });
-    });
 
     Thing.find({
         location: {
             $near: {
-                $maxDistance: parseInt(req.body.radius),
+                $maxDistance: parseInt(req.query.radius),
                 $geometry: {
                 type: "Point",
-                    coordinates: [parseFloat(req.body.lng), parseFloat(req.body.lat)]
+                    coordinates: [parseFloat(req.query.lng), parseFloat(req.query.lat)]
                 }
             }
         }
@@ -55,7 +42,6 @@ exports.index = function (req, res) {
         }
         res.json({
             status: "success",
-            message: "Things retrieved successfully",
             data: things
         });
     });
@@ -64,10 +50,63 @@ exports.index = function (req, res) {
 
 // Handle create thing actions
 exports.create = function (req, res) {
-    res.json({
-        status: "warning",
-        message: 'Not yet implemented'
+
+    const thing = new Thing();
+    const ts = new Date().getTime();
+
+      //validation
+    if (
+        typeof req.body.user !== 'string' || 
+        typeof req.body.type !== 'string' ||
+        typeof req.body.lat !== 'string' ||
+        typeof req.body.lng !== 'string' ||
+        typeof req.body.images === 'undefined' ||
+        typeof req.body.tags === 'undefined'
+        ) {
+        res.json({
+            status: "error",
+            message: "Unauthorized",
+        });
+        return;
+    }
+
+    if ( req.body.user.length < 10 ) {
+        res.json({
+            status: "error",
+            message: "Unauthorized",
+        });
+        return;
+    }
+
+    thing._id = uuidv1();
+    thing.availability = "full";
+    thing.status = "live";
+    thing.type = req.body.type;
+    thing.timestamp = ts;
+    thing.user = req.body.user;
+    thing.tags = req.body.tags;
+    thing.images = req.body.images;
+    thing.updates = [{
+        user: req.body.user,
+        timestamp: ts,
+        what: "create"
+    }];
+    thing.location.type = "Point";
+    thing.location.coordinates = [parseFloat(req.body.lng), parseFloat(req.body.lat)];
+
+    thing.save(function (err) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
+            });
+        }
+        res.json({
+            status: 'success',
+            data: thing
+        });
     });
+
 };
 
 // Handle view thing info
@@ -76,7 +115,7 @@ exports.view = function (req, res) {
         if (err)
             res.send(err);
         res.json({
-            message: 'Thing details loading..',
+            status: 'success',
             data: thing
         });
     });
@@ -99,7 +138,7 @@ exports.update = function (req, res) {
             if (err)
                 res.json(err);
             res.json({
-                message: 'Thing Info updated',
+                status: 'success',
                 data: thing
             });
         });
