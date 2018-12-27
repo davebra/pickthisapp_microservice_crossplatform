@@ -12,6 +12,7 @@ router.get('/', function (req, res) {
 var tagController = require('./controllers/tagController');
 var userController = require('./controllers/userController');
 var thingController = require('./controllers/thingController');
+var uploadController = require('./controllers/uploadController');
 
 // Tags routes
 router.route('/tags')
@@ -30,6 +31,11 @@ router.route('/things')
 router.route('/things/:thing_id')
     .get(thingController.view)
     .post(thingController.update);
+
+// User routes
+router.route('/upload')
+    .get(uploadController.index)
+    .post(uploadController.index);
 
 // Export API routes
 module.exports = router;

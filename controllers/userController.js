@@ -1,4 +1,4 @@
-User = require('../models/userModel');
+let User = require('../models/userModel');
 let uuidv5 = require('uuid/v5');
 
 // Handle index actions
@@ -29,8 +29,10 @@ exports.index = function (req, res) {
 
     User.findById(newUser.id, function (err, userExists) {
 
-        if (err)
+        if (err){
             res.send(err);
+            return;
+        }
 
         if (!userExists){
 
@@ -48,6 +50,7 @@ exports.index = function (req, res) {
                     data: newUser
                 });
             });
+            return;
 
         } else {
 
@@ -56,6 +59,7 @@ exports.index = function (req, res) {
                 message: 'User logged in',
                 data: userExists.id
             });
+            return;
 
         }
 

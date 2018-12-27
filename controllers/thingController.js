@@ -1,5 +1,4 @@
-Thing = require('../models/thingModel');
-let uuidv5 = require('uuid/v5');
+let Thing = require('../models/thingModel');
 let uuidv1 = require('uuid/v1');
 
 // Handle index actions
@@ -70,7 +69,8 @@ exports.create = function (req, res) {
         return;
     }
 
-    if ( req.body.user.length < 10 ) {
+    // validate user, with uuidv5 only for dev
+    if (/^[0-9A-F]{8}-[0-9A-F]{4}-[5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/.test(req.body.user)) {
         res.json({
             status: "error",
             message: "Unauthorized",
@@ -100,6 +100,7 @@ exports.create = function (req, res) {
                 status: "error",
                 message: err,
             });
+            return;
         }
         res.json({
             status: 'success',
@@ -112,8 +113,13 @@ exports.create = function (req, res) {
 // Handle view thing info
 exports.view = function (req, res) {
     Thing.findById(req.params.thing_id, function (err, thing) {
-        if (err)
-            res.send(err);
+        if (err){
+            res.json({
+                status: 'error',
+                message: err
+            });
+            return;
+        }
         res.json({
             status: 'success',
             data: thing
@@ -125,8 +131,13 @@ exports.view = function (req, res) {
 exports.update = function (req, res) {
 
     Thing.findById(req.params.thing_id, function (err, thing) {
-        if (err)
-            res.send(err);
+        if (err){
+            res.json({
+                status: 'error',
+                message: err
+            });
+            return;
+        }
 
         thing.name = req.body.name ? req.body.name : thing.name;
         thing.gender = req.body.gender;
@@ -135,8 +146,13 @@ exports.update = function (req, res) {
 
         // save the thing and check for errors
         thing.save(function (err) {
-            if (err)
-                res.json(err);
+            if (err){
+                res.json({
+                    status: 'error',
+                    message: err
+                });
+                return;
+            }
             res.json({
                 status: 'success',
                 data: thing
