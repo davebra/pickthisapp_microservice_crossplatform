@@ -43,8 +43,6 @@ var thingSchema = mongoose.Schema({
     }]
 });
 
-//hingSchema.index({ location: "2dsphere" });
-
 // Export Thing model
 var Thing = mongoose.model("things", thingSchema);
 module.exports = Thing;

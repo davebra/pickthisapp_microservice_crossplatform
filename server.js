@@ -1,9 +1,12 @@
-let dotenv = require('dotenv').config();
-let express = require('express');
-let bodyParser = require('body-parser');
-let mongoose = require('mongoose');
+let dotenv = require('dotenv').config(); // library for manage .env variables
+let express = require('express'); // nodejs webserver
+let bodyParser = require('body-parser'); // library for parse body requests
+let mongoose = require('mongoose'); // library for mongodb through nodejs
+
+// create express app
 let app = express();
 
+// import routes
 let apiRoutes = require("./routes")
 
 // Configure bodyparser to handle post requests
@@ -16,7 +19,6 @@ app.use(bodyParser.json());
 mongoose.connect(
     process.env.MONGODB_URI ||
     'mongodb://127.0.0.1:27017/pickthisapp', {useNewUrlParser: true});
-
 var db = mongoose.connection;
 
 // Setup server port

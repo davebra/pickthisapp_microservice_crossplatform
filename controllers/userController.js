@@ -4,7 +4,7 @@ let uuidv5 = require('uuid/v5');
 // Handle index actions
 exports.index = function (req, res) {
 
-    //validation
+    //validation of required fields
     if (
         typeof req.body.provider !== 'string' || 
         typeof req.body.providerid !== 'string' ||
@@ -18,6 +18,7 @@ exports.index = function (req, res) {
         return;
     }
 
+    // create the user object and fill with data
     var newUser = new User();
     newUser._id = uuidv5(req.body.providerid, '300005f7-1174-47bf-bf0a-9a4a99887c88');
     newUser.status = 'enabled'; //enabled, suspended, disabled
@@ -30,19 +31,24 @@ exports.index = function (req, res) {
     User.findById(newUser.id, function (err, userExists) {
 
         if (err){
-            res.send(err);
+            res.json({
+                status: "error",
+                message: err,
+            });
             return;
         }
 
+        // check if the user exists in mongodb
         if (!userExists){
 
-            // save the tag and check for errors
+            // save and return the user and check for errors
             newUser.save(function (err) {
                 if (err) {
                     res.json({
                         status: "error",
                         message: err,
                     });
+                    return;
                 }
                 res.json({
                     status: "success",
@@ -54,6 +60,7 @@ exports.index = function (req, res) {
 
         } else {
 
+            // if exsists, return just the object data
             res.json({
                 status: "success",
                 message: 'User logged in',
