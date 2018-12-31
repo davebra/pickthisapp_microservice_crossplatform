@@ -56,7 +56,7 @@ exports.create = function (req, res) {
     // create empty object
     const thing = new Thing();
 
-      //validation of required fields
+    //validation of required fields
     if (
         typeof req.body.user !== 'string' || 
         typeof req.body.type !== 'string' ||
@@ -163,23 +163,36 @@ exports.update = function (req, res) {
             return;
         }
 
+        var updatedWhat = "updated";
+
         // fill the object data
         if ( typeof req.body.availability === 'string' ) {
             thing.availability = req.body.availability;
+            updatedWhat += " availability("+req.body.availability+")";
         }
         if ( typeof req.body.status === 'string' ) {
             thing.status = req.body.status;
+            updatedWhat += " status("+req.body.status+")";
         }
         if ( typeof req.body.type === 'string' ) {
             thing.type = req.body.type;
+            updatedWhat += " type("+req.body.type+")";
         }
         if ( typeof req.body.tags !== 'undefined' ) {
             thing.tags = req.body.tags;
+            updatedWhat += " tags";
         }
-        thing.updates.push({
-            user: req.body.user,
-            what: "updated"
-        });
+        if ( typeof req.body.images !== 'undefined' ) {
+            thing.tags = req.body.tags;
+            updatedWhat += " images";
+        }
+        // if there are something updated, add what has been updated in the updates[]
+        if (updatedWhat.length > 8){
+            thing.updates.push({
+                user: req.body.user,
+                what: updatedWhat
+            });
+        }
 
         // save the thing and check for errors
         thing.save(function (err) {
