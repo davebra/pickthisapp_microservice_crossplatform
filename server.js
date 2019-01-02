@@ -2,12 +2,19 @@ let dotenv = require('dotenv').config(); // library for manage .env variables
 let express = require('express'); // nodejs webserver
 let bodyParser = require('body-parser'); // library for parse body requests
 let mongoose = require('mongoose'); // library for mongodb through nodejs
+let apiRoutes = require("./routes"); // import routes
 
 // create express app
 let app = express();
 
-// import routes
-let apiRoutes = require("./routes")
+// allow cors from localhost
+app.all('*', function(req, res, next) {
+    var origin = req.get('origin'); 
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 // Configure bodyparser to handle post requests
 app.use(bodyParser.urlencoded({
