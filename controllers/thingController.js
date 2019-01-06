@@ -215,8 +215,10 @@ exports.update = function (req, res) {
 // Handle userthings actions
 exports.userthings = function (req, res) {
 
+    var userid = toString( req.params.user_id );
+
     // execute the find action, with geometry, and return the objects
-    Thing.find({user: req.params.thing_id}).exec(function (err, things) {
+    Thing.find({user: userid}).sort('-timestamp').exec(function (err, things) {
         if (err) {
             res.json({
                 status: "error",
