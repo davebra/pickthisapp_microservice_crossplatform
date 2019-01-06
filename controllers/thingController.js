@@ -210,7 +210,9 @@ exports.update = function (req, res) {
         });
     });
 
-    // Handle index actions
+};
+
+// Handle userthings actions
 exports.userthings = function (req, res) {
 
     // execute the find action, with geometry, and return the objects
@@ -226,7 +228,5 @@ exports.userthings = function (req, res) {
             data: things
         });
     });
-
-};
 
 };
