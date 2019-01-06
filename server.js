@@ -1,6 +1,7 @@
 let dotenv = require('dotenv').config(); // library for manage .env variables
 let express = require('express'); // nodejs webserver
 let bodyParser = require('body-parser'); // library for parse body requests
+let busboyBodyParser = require('busboy-body-parser'); //library for parse multipart form req
 let mongoose = require('mongoose'); // library for mongodb through nodejs
 let apiRoutes = require("./routes"); // import routes
 
@@ -21,6 +22,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+app.use(busboyBodyParser({ 
+    limit: '5mb'
+}));
 
 // Connect to Mongoose and set connection variable
 mongoose.connect(

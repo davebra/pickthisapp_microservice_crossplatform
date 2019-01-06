@@ -36,7 +36,6 @@ router.route('/things/:thing_id')
 
 // User routes
 router.route('/upload')
-    .get(uploadController.index)
     .post(uploadController.index);
 
 // Export API routes

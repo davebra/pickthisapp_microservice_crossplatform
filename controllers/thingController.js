@@ -26,6 +26,7 @@ exports.index = function (req, res) {
 
     // execute the find action, with geometry, and return the objects
     Thing.find({
+        status: "live",
         location: {
             $near: {
                 $maxDistance: parseInt(req.query.radius),
@@ -218,7 +219,7 @@ exports.userthings = function (req, res) {
     var userid = toString( req.params.user_id );
 
     // execute the find action, with geometry, and return the objects
-    Thing.find({user: userid}).sort('-timestamp').exec(function (err, things) {
+    Thing.find({user: userid, status: "live"}).sort('-timestamp').exec(function (err, things) {
         if (err) {
             res.json({
                 status: "error",

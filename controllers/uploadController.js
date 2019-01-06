@@ -1,18 +1,13 @@
 let dotenv = require('dotenv').config();
 let aws = require('aws-sdk');
-
-const S3_BUCKET = process.env.S3_BUCKET_NAME;
-
 aws.config.region = 'ap-southeast-2';
 
-// Handle index actions
 exports.index = function (req, res) {
 
     //validation
     if (
         typeof req.body.user !== 'string' ||
-        typeof req.body.imagename !== 'string' ||
-        typeof req.body.image === 'undefined'
+        typeof req.body.imagename !== 'string'
         ) {
             res.json({
                 status: "error",
@@ -30,14 +25,42 @@ exports.index = function (req, res) {
         return;
     }
 
+    // no file added
+    if ( typeof req.files.file === 'undefined' ) {
+            res.json({
+                status: "error",
+                message: "Bad request",
+            });
+            return;
+    }
+
+    // file too large
+    if (req.files.file.truncated) {
+        res.json({
+            status: "error",
+            message: "File exceed size limit",
+        });
+        return;
+    }
+
+    // file type not allowed
+    if ( ![,'image/jpeg','image/png'].includes(req.files.file.mimetype ) ) {
+        res.json({
+            status: "error",
+            message: "File not allowed. Allowed are: doc, docx, pdf, jpg, png.",
+        });
+        return;
+    }
+
+    const fileName = `things/${req.body.imagename}`;
     const s3 = new aws.S3();
-    const fileName = "things/" + req.body.imagename + ".jpg";
+
     const s3Params = {
-        Bucket: S3_BUCKET,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: fileName,
         ContentType: 'image/jpeg',
         ACL: 'public-read',
-        Body: Buffer.from(req.body.image, 'base64')
+        Body: req.files.file.data // Buffer.from(..., 'base64')
     };
 
     s3.upload(s3Params, function (err, data) {
@@ -50,10 +73,8 @@ exports.index = function (req, res) {
         }
         res.json({
             status: "success",
-            data: data,
+            url: data.Location,
         });
     });
         
 };
-
-
