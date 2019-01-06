@@ -210,4 +210,23 @@ exports.update = function (req, res) {
         });
     });
 
+    // Handle index actions
+exports.userthings = function (req, res) {
+
+    // execute the find action, with geometry, and return the objects
+    Thing.find({user: req.params.thing_id}).exec(function (err, things) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
+            });
+        }
+        res.json({
+            status: "success",
+            data: things
+        });
+    });
+
+};
+
 };

@@ -14,7 +14,7 @@ var Tag = module.exports = mongoose.model('tags', tagSchema);
 
 // Export method for get all tags
 module.exports.getAll = function (callback) {
-    Tag.find().limit(5).sort('-items').select('name').exec(callback);
+    Tag.find().limit(5).sort('-items').select('name -_id').exec(callback);
 }
 
 // Export method for get tags starting with

@@ -31,6 +31,8 @@ router.route('/things')
 router.route('/things/:thing_id')
     .get(thingController.view)
     .post(thingController.update);
+    router.route('/userthings/:user_id')
+    .get(thingController.userthings);
 
 // User routes
 router.route('/upload')
