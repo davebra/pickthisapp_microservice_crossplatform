@@ -16,7 +16,7 @@ var thingSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        required: true // live, paused, deleted, warn, ban, duplicate
+        required: true // live, paused, deleted, spam, inappropriate, duplicate
     },
     type: {
         type: String, // pickup, contact

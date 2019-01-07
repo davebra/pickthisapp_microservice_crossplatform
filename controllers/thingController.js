@@ -58,23 +58,15 @@ exports.create = function (req, res) {
     const thing = new Thing();
 
     //validation of required fields
+    // only for dev, user validation in JWT for production
     if (
         typeof req.body.user !== 'string' || 
         typeof req.body.type !== 'string' ||
-        typeof req.body.lat !== 'string' ||
-        typeof req.body.lng !== 'string' ||
+        typeof req.body.lat === 'undefined' ||
+        typeof req.body.lng === 'undefined' ||
         typeof req.body.images === 'undefined' ||
         typeof req.body.tags === 'undefined'
         ) {
-        res.json({
-            status: "error",
-            message: "Unauthorized",
-        });
-        return;
-    }
-
-    // validate user, if is valid uuid5 with regex, only for dev
-    if (/^[0-9A-F]{8}-[0-9A-F]{4}-[5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/.test(req.body.user)) {
         res.json({
             status: "error",
             message: "Unauthorized",
@@ -136,17 +128,9 @@ exports.view = function (req, res) {
 // Handle update thing info
 exports.update = function (req, res) {
 
-    //validation of required fields
+    // validation of required fields
+    // only for dev, user validation in JWT for production
     if ( typeof req.body.user !== 'string' ) {
-        res.json({
-            status: "error",
-            message: "Unauthorized",
-        });
-        return;
-    }
-
-    // validate user, if is valid uuid5 with regex, only for dev
-    if (/^[0-9A-F]{8}-[0-9A-F]{4}-[5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/.test(req.body.user)) {
         res.json({
             status: "error",
             message: "Unauthorized",
@@ -160,6 +144,14 @@ exports.update = function (req, res) {
             res.json({
                 status: 'error',
                 message: err
+            });
+            return;
+        }
+
+        if (thing === null || thing === undefined){
+            res.json({
+                status: 'error',
+                message: 'no thing found'
             });
             return;
         }
@@ -216,10 +208,8 @@ exports.update = function (req, res) {
 // Handle userthings actions
 exports.userthings = function (req, res) {
 
-    var userid = toString( req.params.user_id );
-
     // execute the find action, with geometry, and return the objects
-    Thing.find({user: userid, status: "live"}).sort('-timestamp').exec(function (err, things) {
+    Thing.find({user: req.params.user_id, status: { $in: ["live", "paused"] }}).sort('-timestamp').exec(function (err, things) {
         if (err) {
             res.json({
                 status: "error",
