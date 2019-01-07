@@ -4,11 +4,11 @@ let mongoose = require('mongoose');
 var userSchema = mongoose.Schema({
     _id: String,
     provider: {
-        type: String,
+        type: String, // google, facebook, test, etc...
         required: true
     },
     providerid: {
-        type: String,
+        type: String, // id from the provider
         required: true
     },
     email: {

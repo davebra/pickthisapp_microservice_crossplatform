@@ -158,7 +158,7 @@ exports.update = function (req, res) {
 
         var updatedWhat = "updated";
 
-        // fill the object data
+        // fill the object data, if fields are sent in the request
         if ( typeof req.body.availability === 'string' ) {
             thing.availability = req.body.availability;
             updatedWhat += " availability("+req.body.availability+")";
@@ -208,7 +208,7 @@ exports.update = function (req, res) {
 // Handle userthings actions
 exports.userthings = function (req, res) {
 
-    // execute the find action, with geometry, and return the objects
+    // execute the find action for the user, and return the objects
     Thing.find({user: req.params.user_id, status: { $in: ["live", "paused"] }}).sort('-timestamp').exec(function (err, things) {
         if (err) {
             res.json({

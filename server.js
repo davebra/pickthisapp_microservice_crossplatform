@@ -20,7 +20,9 @@ app.all('*', function(req, res, next) {
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
 
 // Connect to Mongoose and set connection variable
 mongoose.connect(

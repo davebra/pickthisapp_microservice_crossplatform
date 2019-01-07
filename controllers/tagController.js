@@ -3,8 +3,10 @@ let Tag = require('../models/tagModel');
 // Handle index actions
 exports.index = function (req, res) {
 
+    // if tag query in the string url is missing, get all the tags
     if (typeof req.query.tag !== 'string') {
 
+        // getAll method in Tag Model
         Tag.getAll(function (err, tags) {
             if (err) {
                 res.json({
@@ -20,6 +22,8 @@ exports.index = function (req, res) {
         
     } else {
 
+        // else, get tags starting with 
+        // getByStart method in Tag Model
         Tag.getByStart(function (err, tags) {
             if (err) {
                 res.json({

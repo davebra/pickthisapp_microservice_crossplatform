@@ -6,7 +6,7 @@ var thingSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    location: {
+    location: { // to use with $near mongodb function
         type: { type: String },
         coordinates: []
     },

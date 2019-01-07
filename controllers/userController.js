@@ -28,6 +28,7 @@ exports.index = function (req, res) {
     newUser.fullname = req.body.fullname;
     newUser.things = [];
 
+    // find user in the database
     User.findById(newUser.id, function (err, userExists) {
 
         if (err){
@@ -41,7 +42,7 @@ exports.index = function (req, res) {
         // check if the user exists in mongodb
         if (!userExists){
 
-            // save and return the user and check for errors
+            // if not exists, save in db and return the user
             newUser.save(function (err) {
                 if (err) {
                     res.json({
