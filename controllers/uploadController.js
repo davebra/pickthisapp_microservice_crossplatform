@@ -1,21 +1,23 @@
 const dotenv = require('dotenv').config();
 const mime = require('mime'); // library to recognize the mime type of the file added
-const aws = require('aws-sdk'); // library to connect to aws services
 const uuidv4 = require('uuid/v4'); // library for generate unique ids
-
-aws.config.region = process.env.AWS_S3_REGION;
 
 // Handle upload action
 exports.upload = function (req, res) {
 
     // no file added
+    if ( typeof req.files === 'undefined' ) {
+        return res.status(400).json({ message: "File missing." });
+    }
+
+    // no file added
     if ( typeof req.files.file === 'undefined' ) {
-        return res.status(400).json({ message: "Bad request." });
+        return res.status(400).json({ message: "File missing." });
     }
 
     // file too large
     if (req.files.file.truncated) {
-        return res.status(400).json({ message: "Bad request." });
+        return res.status(400).json({ message: "File too large." });
     }
 
     // file type not allowed
@@ -26,8 +28,8 @@ exports.upload = function (req, res) {
     //set a unique filename with correct extension
     const fileName = `${uuidv4()}.${mime.getExtension(req.files.file.mimetype)}`;
 
-    // if S3_BUCKET_NAME is set to local, save images in uploads folder
-    if( process.env.AWS_S3_BUCKET === 'local' ){
+    // if AWS_S3_REGION is set to local, save images in uploads folder
+    if( process.env.AWS_S3_REGION === 'local' ){
 
         const fs = require('fs');
         fs.writeFile(`${__dirname}/../uploads/${fileName}`, req.files.file.data, (err) => {
@@ -40,6 +42,10 @@ exports.upload = function (req, res) {
         });
 
     } else {
+
+        // import the aws-sdk library and set the region
+        let aws = require('aws-sdk');
+        aws.config.region = process.env.AWS_S3_REGION;
 
         // starting the S3 client and create the parameters of the S3 Object
         const s3 = new aws.S3();

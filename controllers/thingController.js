@@ -87,18 +87,11 @@ exports.view = function (req, res) {
 
     // find and return the object with id
     Thing.findById(req.params.thing_id, function (err, thing) {
-        if (err){
-            res.json({
-                status: 'error',
-                message: err
-            });
-            return;
-        }
-        res.json({
-            status: 'success',
-            data: thing
-        });
+        if (err) return res.status(500).send(err);
+
+        return res.status(200).json(thing);
     });
+
 };
 
 // Handle update thing info
@@ -148,9 +141,7 @@ exports.update = function (req, res) {
 
         // save the thing and check for errors
         thing.save(function (err) {
-            if (err){
-                return res.status(500).send(err);
-            }
+            if (err) return res.status(500).send(err);
 
             return res.status(200).json(thing);
         });
@@ -171,7 +162,6 @@ exports.userthings = function (req, res) {
         if (err) return res.status(500).send(err);
 
         return res.status(200).send(things);
-
     });
 
 };

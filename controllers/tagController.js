@@ -18,7 +18,7 @@ exports.list = function (req, res) {
 
         // else, get tags starting with 
         // getByStart method in Tag Model
-        Tag.getByStart(req.query.s.toLowerCase(), function (err, tags) {
+        Tag.getByStart(req.query.s, function (err, tags) {
             if (err) return res.status(400).send(err);
 
             return res.status(200).send(tags);

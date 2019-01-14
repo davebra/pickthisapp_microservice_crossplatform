@@ -40,7 +40,7 @@ app.get('/', (req, res) => res.send('PickThisApp RestAPI Server'));
 app.use('/api', apiRoutes);
 
 // If we are not using AWS-S3, create a resource to permits the files uploaded in /upload folder
-if( process.env.AWS_S3_BUCKET === 'local' ){
+if( process.env.AWS_S3_REGION === 'local' ){
     app.use('/uploads', express.static('uploads'));
 }
 // Launch app to listen to specified port

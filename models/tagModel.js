@@ -18,5 +18,5 @@ module.exports.getAll = function (callback) {
 
 // Export method for get tags starting with
 module.exports.getByStart = function (letters, callback) {
-    Tag.find({"name" : {$regex : letters+".*"}}).limit(5).select('name  -_id').exec(callback);
+    Tag.find({"name" : {$regex : letters+".*", $options: 'i'}}).limit(5).select('name  -_id').exec(callback);
 }
