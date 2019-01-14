@@ -1,42 +1,49 @@
-let router = require('express').Router();
+const router = require('express').Router();
+const tagController = require('./controllers/tagController');
+const authController = require('./controllers/authController');
+const userController = require('./controllers/userController');
+const thingController = require('./controllers/thingController');
+const uploadController = require('./controllers/uploadController');
 
 // Set default API response
 router.get('/', function (req, res) {
-    res.json({
-        status: 'API Works',
+    return res.status(200).json({
         message: 'Welcome to PickThisApp Rest API',
     });
 });
 
-// Import controllers
-var tagController = require('./controllers/tagController');
-var userController = require('./controllers/userController');
-var thingController = require('./controllers/thingController');
-var uploadController = require('./controllers/uploadController');
+// User login route
+router.route('/login')
+    .post(userController.login);
+
+// User signup route
+router.route('/signup')
+    .post(userController.signup);
+
+// User update route
+router.route('/user/:user_id')
+    .post(authController.auth, userController.update); // auth middleware
+
+// User things route
+router.route('/user/:user_id/things')
+    .get(authController.auth, thingController.userthings); // auth middleware
 
 // Tags routes
 router.route('/tags')
-    .get(tagController.index)
-    .post(tagController.create);
-
-// User routes
-router.route('/user')
-    .get(userController.index)
-    .post(userController.index);
+    .get(tagController.list)
+    .post(authController.auth, tagController.create); // auth middleware
 
 // Things routes
 router.route('/things')
-    .get(thingController.index)
-    .post(thingController.create);
+    .get(thingController.list)
+    .post(authController.auth, thingController.create); // auth middleware
 router.route('/things/:thing_id')
     .get(thingController.view)
-    .post(thingController.update);
-router.route('/userthings/:user_id')
-    .get(thingController.userthings);
+    .post(authController.auth, thingController.update); // auth middleware
 
 // User routes
 router.route('/upload')
-    .post(uploadController.index);
+    .post(authController.auth, uploadController.upload); // auth middleware
 
 // Export API routes
 module.exports = router;

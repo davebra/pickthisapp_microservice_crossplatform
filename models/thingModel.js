@@ -1,25 +1,30 @@
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const uuidv4 = require('uuid/v4');
 
 // Setup schema
-var thingSchema = mongoose.Schema({
+const thingSchema = mongoose.Schema({
     _id: {
         type: String,
-        required: true
+        required: true,
+        default: uuidv4()
     },
     location: { // to use with $near mongodb function
         type: { type: String },
         coordinates: []
     },
     availability: {
-        type: String, // full, medium, low, empty
+        type: String,
+        enum: ['full', 'medium', 'low', 'empty'],
         required: true
     },
     status: {
         type: String,
-        required: true // live, paused, deleted, spam, inappropriate, duplicate
+        enum: ['live', 'paused', 'deleted', 'spam', 'inappropriate', 'duplicate'],
+        required: true
     },
     type: {
         type: String, // pickup, contact
+        enum: ['pickup', 'contact'],
         required: true
     },
     timestamp: {
@@ -31,10 +36,21 @@ var thingSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    tags: [String],
-    images: [String],
+    usernickname: {
+        type: String,
+        required: true
+    },
+    tags: {
+        type: [String],
+        required: true
+    },
+    images: {
+        type: [String],
+        required: true
+    },
     updates: [{
         user: String, 
+        usernickname: String, 
         timestamp: {
             type: Date,
             default: Date.now
@@ -44,5 +60,5 @@ var thingSchema = mongoose.Schema({
 });
 
 // Export Thing model
-var Thing = mongoose.model("things", thingSchema);
+const Thing = mongoose.model("things", thingSchema);
 module.exports = Thing;

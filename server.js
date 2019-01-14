@@ -1,44 +1,48 @@
-let dotenv = require('dotenv').config(); // library for manage .env variables
-let express = require('express'); // nodejs webserver
-let bodyParser = require('body-parser'); // library for parse body requests
-let mongoose = require('mongoose'); // library for mongodb through nodejs
-let apiRoutes = require("./routes"); // import routes
+const dotenv = require('dotenv').config(); // library for manage .env variables
+const express = require('express'); // nodejs webserver
+const cors = require('cors'); // set the appropriate CORS
+const bodyParser = require('body-parser'); // library for parse body requests
+let busboyBodyParser = require('busboy-body-parser'); // library for parse body requests with formdata
+const cookieParser = require('cookie-parser'); // library for parse cookies
+const mongoose = require('mongoose'); // library for mongodb through nodejs
+const apiRoutes = require("./routes"); // import routes
 
 // create express app
-let app = express();
+const app = express();
 
-// allow cors from localhost
-app.all('*', function(req, res, next) {
-    var origin = req.get('origin'); 
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+// Connect to Mongoose and set connection variable
+mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true});
+const db = mongoose.connection;
 
-// Configure bodyparser to handle post requests
+// allow cors from everywhere, for dev purpouses
+app.use(cors({ allowedHeaders: 'Origin, Access-Control-Allow-Headers, Authorization, X-Requested-With, Content-Type, Cache-Control, Accept' }));
+app.options('*', cors());  // enable pre-flight
+
+// Configure express to handle cookies
+app.use(cookieParser(process.env.COOKIES_SECTRET));
+
+// Configure express to handle post requests  with body and formdata
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json({
-    limit: '50mb'
+app.use(bodyParser.json());
+app.use(busboyBodyParser({ 
+    limit: '10mb'
 }));
 
-// Connect to Mongoose and set connection variable
-mongoose.connect(
-    process.env.MONGODB_URI ||
-    'mongodb://127.0.0.1:27017/pickthisapp', {useNewUrlParser: true});
-var db = mongoose.connection;
-
 // Setup server port
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 // Send message for default URL
-app.get('/', (req, res) => res.send('Pick This App server'));
+app.get('/', (req, res) => res.send('PickThisApp RestAPI Server'));
 
 // Use Api routes in the App
-app.use('/api', apiRoutes)
+app.use('/api', apiRoutes);
 
+// If we are not using AWS-S3, create a resource to permits the files uploaded in /upload folder
+if( process.env.AWS_S3_BUCKET === 'local' ){
+    app.use('/uploads', express.static('uploads'));
+}
 // Launch app to listen to specified port
 app.listen(port, function () {
     console.log("Running Rest API on port " + port);

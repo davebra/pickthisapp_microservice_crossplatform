@@ -1,32 +1,27 @@
-let Thing = require('../models/thingModel');
-let uuidv1 = require('uuid/v1');
+const Thing = require('../models/thingModel');
 
-// Handle index actions
-exports.index = function (req, res) {
+// Handle list actions
+exports.list = function (req, res) {
 
     // validation, center point and radius are required
     if (typeof req.query.lat !== 'string' || 
         typeof req.query.lng !== 'string' || 
         typeof req.query.radius !== 'string' ) {
-        res.json({
-            status: "error",
+        return res.status(400).json({
             message: "Missing position",
         });
-        return;
     }
 
-    // if radius is too big, ask to zoom
-    if ( parseInt(req.query.radius) > 60000 ) {
-        res.json({
-            status: "warning",
+    // if radius is too big (too many things could be loaded), ask to zoom, max 100km
+    if ( parseInt(req.query.radius) > 100000 ) {
+        return res.status(400).json({
             message: "Please zoom in",
         });
-        return;
     }
 
     // execute the find action, with geometry, and return the objects
     Thing.find({
-        status: "live",
+        status: "live", // select only live things
         location: {
             $near: {
                 $maxDistance: parseInt(req.query.radius),
@@ -37,16 +32,10 @@ exports.index = function (req, res) {
             }
         }
     }).exec(function (err, things) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            data: things
-        });
+        //if any error, return the error
+        if (err) return res.status(500).send(err);
+
+        return res.status(200).json(things);
     });
 
 };
@@ -54,36 +43,31 @@ exports.index = function (req, res) {
 // Handle create thing actions
 exports.create = function (req, res) {
 
-    // create empty object
-    const thing = new Thing();
-
     //validation of required fields
-    // only for dev, user validation in JWT for production
     if (
-        typeof req.body.user !== 'string' || 
         typeof req.body.type !== 'string' ||
         typeof req.body.lat === 'undefined' ||
         typeof req.body.lng === 'undefined' ||
         typeof req.body.images === 'undefined' ||
         typeof req.body.tags === 'undefined'
         ) {
-        res.json({
-            status: "error",
-            message: "Unauthorized",
+        return res.status(400).json({
+            message: "Bad Request",
         });
-        return;
     }
 
-    // fill the object data
-    thing._id = uuidv1();
+    // create object and fill
+    let thing = new Thing();
     thing.availability = "full";
     thing.status = "live";
     thing.type = req.body.type;
-    thing.user = req.body.user;
+    thing.user = res.locals.user._id;
+    thing.usernickname = res.locals.user.nickname;
     thing.tags = req.body.tags;
     thing.images = req.body.images;
     thing.updates = [{
-        user: req.body.user,
+        user: res.locals.user._id,
+        usernickname: res.locals.user.nickname,
         what: "create"
     }];
     thing.location.type = "Point";
@@ -91,17 +75,9 @@ exports.create = function (req, res) {
 
     // save the thing in mongodb
     thing.save(function (err) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-            return;
-        }
-        res.json({
-            status: 'success',
-            data: thing
-        });
+        if (err) return res.status(500).json(err);
+
+        return res.status(200).json(thing);
     });
 
 };
@@ -128,32 +104,14 @@ exports.view = function (req, res) {
 // Handle update thing info
 exports.update = function (req, res) {
 
-    // validation of required fields
-    // only for dev, user validation in JWT for production
-    if ( typeof req.body.user !== 'string' ) {
-        res.json({
-            status: "error",
-            message: "Unauthorized",
-        });
-        return;
-    }
-
     // find in database, update data and save
     Thing.findById(req.params.thing_id, function (err, thing) {
-        if (err){
-            res.json({
-                status: 'error',
-                message: err
-            });
-            return;
-        }
+        if (err) return res.status(500).send(err);
 
         if (thing === null || thing === undefined){
-            res.json({
-                status: 'error',
-                message: 'no thing found'
+            return res.status(404).json({
+                message: 'Thing not found'
             });
-            return;
         }
 
         var updatedWhat = "updated";
@@ -176,13 +134,14 @@ exports.update = function (req, res) {
             updatedWhat += " tags";
         }
         if ( typeof req.body.images !== 'undefined' ) {
-            thing.tags = req.body.tags;
+            thing.images = req.body.images;
             updatedWhat += " images";
         }
         // if there are something updated, add what has been updated in the updates[]
         if (updatedWhat.length > 8){
             thing.updates.push({
-                user: req.body.user,
+                user: res.locals.user._id,
+                usernickname: res.locals.user.nickname,
                 what: updatedWhat
             });
         }
@@ -190,16 +149,10 @@ exports.update = function (req, res) {
         // save the thing and check for errors
         thing.save(function (err) {
             if (err){
-                res.json({
-                    status: 'error',
-                    message: err
-                });
-                return;
+                return res.status(500).send(err);
             }
-            res.json({
-                status: 'success',
-                data: thing
-            });
+
+            return res.status(200).json(thing);
         });
     });
 
@@ -208,18 +161,17 @@ exports.update = function (req, res) {
 // Handle userthings actions
 exports.userthings = function (req, res) {
 
+    //validation, user cannot retreive posts of another user
+    if ( res.locals.user._id !== req.params.user_id ){
+        return res.status(403).json({ message: "Not authorized" });
+    }
+
     // execute the find action for the user, and return the objects
     Thing.find({user: req.params.user_id, status: { $in: ["live", "paused"] }}).sort('-timestamp').exec(function (err, things) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            data: things
-        });
+        if (err) return res.status(500).send(err);
+
+        return res.status(200).send(things);
+
     });
 
 };
