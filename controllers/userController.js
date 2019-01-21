@@ -42,7 +42,7 @@ exports.login = function (req, res) {
         // if exsists, create a new token and return it
         const token = jwt.sign(
             { 
-                nickname: user.fullname // save the nickname as token payload
+                nickname: user.nickname // save the nickname as token payload
             },
             process.env.JWT_TOKEN_SECRET,
             { expiresIn: '24h' }
