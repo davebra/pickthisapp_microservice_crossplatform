@@ -42,18 +42,17 @@ exports.login = function (req, res) {
         // if exsists, create a new token and return it
         const token = jwt.sign(
             { 
-                nickname: user.nickname // save the nickname as token payload
+                id: user._id, // save the user id in token payload
+                nickname: user.nickname // save the nickname in token payload
             },
-            process.env.JWT_TOKEN_SECRET,
-            { expiresIn: '24h' }
+            process.env.JWT_TOKEN_SECRET
         );
 
-        // save the token to redis db, expire in 24h, like the JWT
-        redisClient.set(token, JSON.stringify(user), 'EX', 24 * 3600);
+        // save the token to redis db with the user
+        redisClient.set(token, JSON.stringify(user));
 
         // set a cookie for the client, so it already have the token in the browser cookies
         res.cookie('access_token', token, {
-            maxAge: 1000 * 3600 * 24, // would expire after 24 hours
             httpOnly: true, // The cookie only accessible by the web server
             signed: true // Indicates if the cookie should be signed
         });
@@ -107,18 +106,17 @@ exports.signup = function (req, res) {
         // create a new token
         const token = jwt.sign(
             { 
-                nickname: user.nickname // save the nickname as token payload
+                id: user._id, // save the user id in token payload
+                nickname: user.nickname // save the nickname in token payload
             },
-            process.env.JWT_TOKEN_SECRET,
-            { expiresIn: '24h' }
+            process.env.JWT_TOKEN_SECRET
         );
 
-        // save the token to redis db, expire in 24h, like the JWT
-        redisClient.set(token, JSON.stringify(user), 'EX', 24 * 3600);
+        // save the token to redis db with the user data
+        redisClient.set(token, JSON.stringify(user));
 
         // set a cookie for the client, so it already have the token in the browser cookies
         res.cookie('access_token', token, {
-            maxAge: 1000 * 3600 * 24, // would expire after 24 hours
             httpOnly: true, // The cookie only accessible by the web server
             signed: true // Indicates if the cookie should be signed
         });
