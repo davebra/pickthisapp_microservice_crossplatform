@@ -87,7 +87,7 @@ exports.signup = function (req, res) {
     user.providerid = req.body.providerid;
     user.nickname = req.body.nickname;
 
-    user.save(function (err) {
+    user.save(function (err, savedUser) {
                 
         // something wrong with mongodb
         if (err) {
@@ -106,14 +106,14 @@ exports.signup = function (req, res) {
         // create a new token
         const token = jwt.sign(
             { 
-                id: user._id, // save the user id in token payload
-                nickname: user.nickname // save the nickname in token payload
+                id: savedUser._id, // save the user id in token payload
+                nickname: savedUser.nickname // save the nickname in token payload
             },
             process.env.JWT_TOKEN_SECRET
         );
 
         // save the token to redis db with the user data
-        redisClient.set(token, JSON.stringify(user));
+        redisClient.set(token, JSON.stringify(savedUser));
 
         // set a cookie for the client, so it already have the token in the browser cookies
         res.cookie('access_token', token, {
