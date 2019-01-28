@@ -11,7 +11,7 @@ redisClient.on("error", function (err) {
 exports.auth = function (req, res, next) {
 
     // get the token from the cookies or the authorization header
-    const token = req.signedCookies['access_token'] || req.headers['x-access-token'] || req.headers['authorization'];
+    let token = req.signedCookies['access_token'] || req.headers['x-access-token'] || req.headers['authorization'];
 
     if (token) {
 
