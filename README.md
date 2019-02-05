@@ -14,7 +14,7 @@ The RestAPI service is intented to use in conjunction with the app [PickThisApp 
 * JWT - JSON Web Tokens, token generator, managed with cookies
 * Mongoose - MongoDB Node.js library
 * Amazon AWS - Optionally, is possible to upload pictures in a S3 bucket
-* body-parser, busboy-body-parser - parse of the body content of the requests
+* body-parser - parse of the body content of the requests
 * dotenv - for manage environment variables with .env files or PaaS setting
 
 ### RestAPI documentation

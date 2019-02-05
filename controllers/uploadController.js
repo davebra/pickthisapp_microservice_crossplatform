@@ -1,40 +1,22 @@
 const dotenv = require('dotenv').config();
-const mime = require('mime'); // library to recognize the mime type of the file added
 const uuidv4 = require('uuid/v4'); // library for generate unique ids
 
 // Handle upload action
 exports.upload = function (req, res) {
 
-    console.log(req);
-
     // no file added
-    if ( typeof req.files === 'undefined' ) {
+    if ( typeof req.body.image === 'undefined' ) {
         return res.status(400).json({ message: "File missing." });
-    }
-
-    // no file added
-    if ( typeof req.files.file === 'undefined' ) {
-        return res.status(400).json({ message: "File missing." });
-    }
-
-    // file too large
-    if (req.files.file.truncated) {
-        return res.status(400).json({ message: "File too large." });
-    }
-
-    // file type not allowed
-    if ( !['image/jpeg','image/png'].includes(req.files.file.mimetype ) ) {
-        return res.status(400).json({ message: "File not allowed. Allowed are: jpg, png." });
     }
 
     //set a unique filename with correct extension
-    const fileName = `${uuidv4()}.${mime.getExtension(req.files.file.mimetype)}`;
+    const fileName = `${uuidv4()}.jpg`;
 
     // if AWS_S3_REGION is set to local, save images in uploads folder
     if( process.env.AWS_S3_REGION === 'local' ){
 
         const fs = require('fs');
-        fs.writeFile(`${__dirname}/../uploads/${fileName}`, req.files.file.data, (err) => {
+        fs.writeFile(`${__dirname}/../uploads/${fileName}`, req.body.image, 'base64', (err) => {
             if (err) return res.status(500).send(err);
 
             return res.status(200).json({
@@ -54,9 +36,9 @@ exports.upload = function (req, res) {
         const s3Params = {
             Bucket: process.env.AWS_S3_BUCKET,
             Key: `things/${fileName}`,
-            ContentType: req.files.file.mimetype,
+            ContentType: 'image/jpeg',
             ACL: 'public-read',
-            Body: req.files.file.data
+            Body: Buffer.from(req.body.image, 'base64')
         };
 
         // execute the upload to S3

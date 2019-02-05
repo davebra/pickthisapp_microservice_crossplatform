@@ -2,7 +2,6 @@ const dotenv = require('dotenv').config(); // library for manage .env variables
 const express = require('express'); // nodejs webserver
 const cors = require('cors'); // set the appropriate CORS
 const bodyParser = require('body-parser'); // library for parse body requests
-let busboyBodyParser = require('busboy-body-parser'); // library for parse body requests with formdata
 const cookieParser = require('cookie-parser'); // library for parse cookies
 const mongoose = require('mongoose'); // library for mongodb through nodejs
 const apiRoutes = require("./routes"); // import routes
@@ -21,13 +20,12 @@ app.options('*', cors());  // enable pre-flight
 // Configure express to handle cookies
 app.use(cookieParser(process.env.COOKIES_SECTRET));
 
-// Configure express to handle post requests  with body and formdata
+// Configure express to handle post requests with json body
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json());
-app.use(busboyBodyParser({ 
-    limit: '10mb'
+app.use(bodyParser.json({
+    limit: '50mb'
 }));
 
 // Setup server port
