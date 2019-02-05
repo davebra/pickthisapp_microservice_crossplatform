@@ -5,6 +5,8 @@ const uuidv4 = require('uuid/v4'); // library for generate unique ids
 // Handle upload action
 exports.upload = function (req, res) {
 
+    console.log(req);
+
     // no file added
     if ( typeof req.files === 'undefined' ) {
         return res.status(400).json({ message: "File missing." });
