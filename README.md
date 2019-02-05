@@ -23,7 +23,7 @@ API documentation at: *coming soon*
 
 ### Demo and start locally
 
-Demo environment running at: `https://pickthisapp.herokuapp.com/`
+Demo environment running at: `https://pickthisapp2.herokuapp.com/`
 
 Local server starts at: `http://localhost:3000/` the port 3000 can be changed in the `.env` file
 
