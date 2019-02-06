@@ -1,5 +1,5 @@
 const dotenv = require('dotenv').config();
-const uuidv1 = require('uuid/v1');
+let uuidv1 = require('uuid/v1');
 
 // Handle upload action
 exports.upload = function (req, res) {

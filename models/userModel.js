@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uuidv1 = require('uuid/v1'); // library to create unique ids
+let uuidv1 = require('uuid/v1'); // library to create unique ids
 
 // Setup schema
 const userSchema = mongoose.Schema({
