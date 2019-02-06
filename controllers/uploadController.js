@@ -1,5 +1,5 @@
 const dotenv = require('dotenv').config();
-const uuidv4 = require('uuid/v4');
+const shortid = require('shortid');
 
 // Handle upload action
 exports.upload = function (req, res) {
@@ -10,7 +10,7 @@ exports.upload = function (req, res) {
     }
 
     //set a unique filename with correct extension
-    const fileName = `${uuidv4()}.jpg`;
+    const fileName = `${shortid.generate()}.jpg`;
 
     // if AWS_S3_REGION is set to local, save images in uploads folder
     if( process.env.AWS_S3_REGION === 'local' ){
