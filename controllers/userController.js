@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const redis = require('redis'); // redis DB library
 const jwt = require('jsonwebtoken'); // JavascriptWebToken Library
+const uuidv4 = require('uuid/v4');
 
 // Connect to Redis to store/get token data
 const redisClient = redis.createClient( process.env.REDIS_URL );
@@ -83,6 +84,7 @@ exports.signup = function (req, res) {
 
     // create the user object
     let user = new User();
+    user._id = uuidv4();
     user.provider = req.body.provider;
     user.providerid = req.body.providerid;
     user.nickname = req.body.nickname;

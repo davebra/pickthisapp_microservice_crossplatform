@@ -1,4 +1,5 @@
 const Thing = require('../models/thingModel');
+const uuidv4 = require('uuid/v4');
 
 // Handle list actions
 exports.list = function (req, res) {
@@ -58,6 +59,7 @@ exports.create = function (req, res) {
 
     // create object and fill
     let thing = new Thing();
+    thing._id = uuidv4();
     thing.availability = "full";
     thing.status = "live";
     thing.type = req.body.type;

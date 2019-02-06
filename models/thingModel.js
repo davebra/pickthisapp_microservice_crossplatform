@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
-const shortid = require('shortid');
 
 // Setup schema
 const thingSchema = mongoose.Schema({
     _id: {
         type: String,
-        default: shortid.generate()
+        required: true
     },
     location: { // to use with $near mongodb function
         type: { type: String },
