@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
-let uuidv1 = require('uuid/v1'); // library to create unique ids
 
 // Setup schema
 const userSchema = mongoose.Schema({
     _id: {
-        type: String,
-        require: true,
-        default: uuidv1()
+        type: String
     },
     provider: {
         type: String,

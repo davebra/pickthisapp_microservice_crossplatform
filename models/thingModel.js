@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
-let uuidv1 = require('uuid/v1');
 
 // Setup schema
 const thingSchema = mongoose.Schema({
     _id: {
-        type: String,
-        required: true,
-        default: uuidv1()
+        type: String
     },
     location: { // to use with $near mongodb function
         type: { type: String },
